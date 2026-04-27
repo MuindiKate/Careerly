@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ────────────────────────────────
+// USER
+// ────────────────────────────────
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  jobs     Job[]
+  contacts Contact[]
+}
+
+// ────────────────────────────────
+// JOB APPLICATION
+// ────────────────────────────────
+model Job {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Core fields
+  company  String
+  role     String
+  jobUrl   String?
+  location String?
+  salary   String?
+  jobType  JobType  @default(FULL_TIME)
+  workMode WorkMode @default(HYBRID)
+
+  // Status tracking
+  status      JobStatus @default(APPLIED)
+  appliedAt   DateTime  @default(now())
+  respondedAt DateTime?
+  interviewAt DateTime?
+  offerAt     DateTime?
+
+  // AI fields
+  jobDescription String?
+  matchScore     Int?
+  aiQuestions    String[]
+
+  // Meta
+  notes     String?
+  source    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contacts  Contact[]
+  reminders Reminder[]
+}
+
+// ────────────────────────────────
+// CONTACT
+// ────────────────────────────────
+model Contact {
+  id     String  @id @default(uuid())
+  userId String
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobId  String?
+  job    Job?    @relation(fields: [jobId], references: [id], onDelete: SetNull)
+
+  name      String
+  role      String?
+  email     String?
+  linkedin  String?
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+// ────────────────────────────────
+// REMINDER
+// ────────────────────────────────
+model Reminder {
+  id    String @id @default(uuid())
+  jobId String
+  job   Job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  message   String
+  remindAt  DateTime
+  sent      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ────────────────────────────────
+// ENUMS
+// ────────────────────────────────
+enum JobStatus {
+  SAVED
+  APPLIED
+  INTERVIEWING
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+}
+
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+} 
