@@ -1,7 +1,15 @@
 {
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
     "@prisma/adapter-pg": "^7.8.0",
     "@supabase/ssr": "^0.10.3",
-    "@supabase/supabase-js": "^2.107.0"
+    "@supabase/supabase-js": "^2.107.0",
+    "@tanstack/react-query": "^5.101.0",
+    "ai": "^6.0.197",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^1.17.0",
+    "recharts": "^3.8.1",
+    "tailwind-merge": "^3.6.0"
   }
 }
